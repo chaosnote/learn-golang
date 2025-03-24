@@ -1,0 +1,9 @@
+{
+  "name": "golang.pack",
+  "version": "0.0.0",
+  "description": "備忘",
+  "main": "",
+  "scripts": {
+    "start": "build.bat"
+  }
+}

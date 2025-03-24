@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "./demo;demo";
+
+package demo ;
+
+message AA {}
+
+message Sample {
+    AA AA = 1 ;
+    enum Codes {
+        OK = 0 ;
+        E0000 = 1 ; 
+        E0001 = 2 ; 
+        E0002 = 3 ; 
+        // ...
+    }
+    Codes Code = 2 ;
+}
