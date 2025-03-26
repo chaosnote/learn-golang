@@ -1,3 +1,5 @@
-# learn-golang
+# Golang 學習與測試
 
-Golang 學習與測試
+## 目的
+
+1. 補上有用過套件
