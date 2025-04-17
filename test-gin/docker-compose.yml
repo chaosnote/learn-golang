@@ -1,0 +1,25 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: gin_mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_USER: chris
+      MARIADB_PASSWORD: 123456
+      MARIADB_DATABASE: simulate
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "1"
+    volumes:
+      - /home/chris/data_store/gin:/var/lib/mysql
+    restart: always
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+
+  redis:
+    image: redis:4.0.2-alpine
+    container_name: gin_redis
+    ports:
+      - "6379:6379"

@@ -6,9 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/gin-gonic/gin"
-
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/redis"
 	ginzap "github.com/gin-contrib/zap"
+	"github.com/gin-gonic/gin"
 
 	"idv/chris/utils"
 )
@@ -34,11 +35,29 @@ func main() {
 
 	g := gin.New()
 
+	redis_store, _ := redis.NewStore(10, "tcp", "ip:6379", "", "", []byte("secret"))
+	g.Use(sessions.Sessions("custom_session", redis_store))
+
 	g.Use(MiddlewareLogger())
 	g.Use(ginzap.RecoveryWithZap(logger.Logger(), true)) // Recovery error
 
 	g.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Server v0.0.0")
+	})
+
+	g.GET("/session", func(c *gin.Context) {
+		session := sessions.Default(c)
+		var count int
+		v := session.Get("count")
+		if v == nil {
+			count = 0
+		} else {
+			count = v.(int)
+			count++
+		}
+		session.Set("count", count)
+		session.Save()
+		c.JSON(200, gin.H{"count": count})
 	})
 
 	s := &http.Server{
