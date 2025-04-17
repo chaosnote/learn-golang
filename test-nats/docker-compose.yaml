@@ -1,24 +1,34 @@
 services:
-  nats:
+  nats-0:
     image: nats:2.10.26-alpine
-    container_name: master
+    container_name: node_0
     ports:
       - "8222:8222"
-      - "4222:4222"
     command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --http_port 8222 "
     networks: ["custom_nats"]
   nats-1:
     image: nats:2.10.26-alpine
-    container_name: slave_0
-    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --routes=nats://ruser:T0pS3cr3t@nats:6222"
+    container_name: node_1
+    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --routes=nats://ruser:T0pS3cr3t@node_0:6222"
     networks: ["custom_nats"]
-    depends_on: ["nats"]
+    depends_on: ["nats-0"]
   nats-2:
     image: nats:2.10.26-alpine
-    container_name: slave_1
-    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --routes=nats://ruser:T0pS3cr3t@nats:6222"
+    container_name: node_2
+    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --routes=nats://ruser:T0pS3cr3t@node_0:6222"
     networks: ["custom_nats"]
-    depends_on: ["nats"]
+    depends_on: ["nats-0"]
+
+  haproxy:
+    image: haproxy:latest
+    container_name: loadbalancer
+    ports:
+      - "4222:4222"
+      - "8080:8080" # HAProxy 的管理介面
+    volumes:
+      - /home/chris/git/learn-golang/test-nats/conf/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks: ["custom_nats"]
+    depends_on: ["nats-0", "nats-1", "nats-2"]
 
 networks:
   custom_nats:
