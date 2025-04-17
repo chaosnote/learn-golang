@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -24,19 +23,19 @@ func pub_0(nc *nats.Conn, msg string) {
 	if err != nil {
 		log.Fatalf("發布消息失敗: %v", err)
 	}
-	fmt.Printf("已發布消息 '%s' 到主題: %s\n", msg, subject)
+	log.Printf("已發布消息 '%s' 到主題: %s\n", msg, subject)
 }
 
 func sub_0(nc *nats.Conn) {
 	var err error
 	// (一般)訂閱消息
 	_, err = nc.Subscribe(subject, func(msg *nats.Msg) {
-		fmt.Printf("接收到來自主題 '%s' 的消息: %s\n", msg.Subject, string(msg.Data))
+		log.Printf("接收到來自主題 '%s' 的消息: %s\n", msg.Subject, string(msg.Data))
 	})
 	if err != nil {
 		log.Fatalf("訂閱失敗: %v", err)
 	}
-	fmt.Printf("已訂閱主題: %s\n", subject)
+	log.Printf("已訂閱主題: %s\n", subject)
 }
 
 func sub_1(nc *nats.Conn) {
@@ -44,12 +43,12 @@ func sub_1(nc *nats.Conn) {
 	// (佇列)訂閱消息
 	group := "workers"
 	_, err = nc.QueueSubscribe(subject, group, func(msg *nats.Msg) {
-		fmt.Printf("接收到來自主題 '%s' 的消息: %s\n", msg.Subject, string(msg.Data))
+		log.Printf("接收到來自主題 '%s' 的消息: %s\n", msg.Subject, string(msg.Data))
 	})
 	if err != nil {
 		log.Fatalf("訂閱失敗: %v", err)
 	}
-	fmt.Printf("已訂閱主題: %s\n", subject)
+	log.Printf("已訂閱主題: %s\n", subject)
 }
 
 func main() {
@@ -59,7 +58,7 @@ func main() {
 		log.Fatalf("無法連接到 NATS: %v", err)
 	}
 	defer nc.Close() // 確保程式結束時關閉連線
-	fmt.Println("已連接到 NATS 伺服器:", addr)
+	log.Println("已連接到 NATS 伺服器:", addr)
 
 	// sub_0(nc)
 	sub_1(nc)
@@ -77,5 +76,5 @@ func main() {
 	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	fmt.Println("程式結束")
+	log.Println("程式結束")
 }
