@@ -31,11 +31,15 @@ services:
   logstash:
     image: logstash:8.18.0
     container_name: logstash
+    depends_on:
+      - kibana
     volumes:
       - /home/chris/git/learn-golang/test-elk/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     ports:
       - "5044:5044"
       - "9600:9600"
+    networks:
+      - elk
 
 networks:
   elk:

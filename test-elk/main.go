@@ -5,76 +5,112 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
+	_ "github.com/elastic/go-elasticsearch/v8/esutil"
+	_ "github.com/joho/godotenv" // 可選：用於載入 .env 檔案
 )
 
+const (
+	esAddress  = "http://192.168.0.236:9200"
+	esUser     = "elastic"
+	esPassword = "123456"
+)
+
+var es *elasticsearch.Client
+
 func main() {
+	// 可選：從 .env 檔案載入配置
+	// godotenv.Load()
+
 	cfg := elasticsearch.Config{
-		Addresses: []string{"http://192.168.0.236:9200"},
-		Username:  "elastic",
-		Password:  "123456",
+		Addresses: []string{esAddress},
+		Username:  esUser,
+		Password:  esPassword,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
 
-	es, err := elasticsearch.NewClient(cfg)
+	var err error
+	es, err = elasticsearch.NewClient(cfg)
 	if err != nil {
 		log.Fatalf("Error creating the client: %s", err)
 	}
 
-	// 定義要索引的文檔
+	logger := log.New(os.Stdout, "[MyApp] ", log.LstdFlags)
+
+	// 模擬產生一些日誌訊息
+	logger.Println("Application started")
+	logInfo("User logged in", "user_id", "123")
+	logWarning("Low disk space", "partition", "/")
+	logError("Database connection error", "error", "timeout")
+	logger.Println("Application finished")
+}
+
+func logInfo(message string, args ...string) {
+	sendLog("INFO", message, args...)
+}
+
+func logWarning(message string, args ...string) {
+	sendLog("WARNING", message, args...)
+}
+
+func logError(message string, args ...string) {
+	sendLog("ERROR", message, args...)
+}
+
+func sendLog(level, message string, args ...string) {
+	if es == nil {
+		log.Println("Elasticsearch client not initialized.")
+		return
+	}
+
 	logData := map[string]interface{}{
-		"timestamp": time.Now().Format(time.RFC3339),
-		"level":     "INFO",
-		"message":   "This is a test log message from Golang",
-		"service":   "golang-app",
+		"@timestamp": time.Now().Format(time.RFC3339),
+		"level":      level,
+		"message":    message,
 	}
 
-	// 將文檔編碼為 JSON
-	jsonData, err := json.Marshal(logData)
-	if err != nil {
-		log.Fatalf("Error marshaling JSON: %s", err)
-	}
-
-	// 定義索引名稱
-	indexName := "golang-logs-" + time.Now().Format("2006.01.02")
-
-	// 創建 IndexRequest
-	req := esapi.IndexRequest{
-		Index:   indexName,
-		Body:    bytes.NewReader(jsonData),
-		Refresh: "true", // 使索引操作立即可見
-	}
-
-	// 執行請求
-	res, err := req.Do(context.Background(), es)
-	if err != nil {
-		log.Fatalf("Error getting response from Elasticsearch: %s", err)
-	}
-	defer res.Body.Close()
-
-	log.Println(res)
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			log.Fatalf("Elasticsearch error: [%d] %s", res.StatusCode, e["error"].(map[string]interface{})["type"])
+	// 添加額外的上下文信息 (key-value pairs)
+	for i := 0; i < len(args); i += 2 {
+		if i+1 < len(args) {
+			logData[args[i]] = args[i+1]
 		}
 	}
 
-	var r map[string]interface{}
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
+	jsonData, err := json.Marshal(logData)
+	if err != nil {
+		log.Printf("Error marshaling JSON: %s", err)
+		return
 	}
 
-	fmt.Printf("Indexed document ID: %v\n", r["_id"])
-	fmt.Println("Log message sent to Elasticsearch!")
+	indexName := "app-" + time.Now().Format("2006.01.02") // 指定 index
+
+	req := esapi.IndexRequest{
+		Index:   indexName,
+		Body:    bytes.NewReader(jsonData),
+		Refresh: "true",
+	}
+
+	res, err := req.Do(context.Background(), es)
+	if err != nil {
+		log.Printf("Error sending log to Elasticsearch: %s", err)
+		return
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		var e map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
+			log.Printf("Error parsing Elasticsearch response: %s", err)
+		} else {
+			log.Printf("Elasticsearch error: [%d] %s", res.StatusCode, e["error"].(map[string]interface{})["type"])
+		}
+	}
 }

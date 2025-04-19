@@ -4,7 +4,10 @@ go 1.23.0
 
 toolchain go1.23.8
 
-require github.com/elastic/go-elasticsearch/v8 v8.18.0
+require (
+	github.com/elastic/go-elasticsearch/v8 v8.18.0
+	github.com/joho/godotenv v1.5.1
+)
 
 require (
 	github.com/elastic/elastic-transport-go/v8 v8.7.0 // indirect
