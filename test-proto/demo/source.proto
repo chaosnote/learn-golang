@@ -1,8 +1,11 @@
 syntax = "proto3";
 
+// option go_package = "./對應路徑;package 名稱";
+// 對應 build.bat 內設置
+
 option go_package = "./demo;demo";
 
-package demo ;
+// package demo ;
 
 message AA {}
 
