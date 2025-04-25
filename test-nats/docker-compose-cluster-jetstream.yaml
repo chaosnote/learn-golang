@@ -1,0 +1,41 @@
+services:
+  nats-0:
+    image: nats:2.10.26-alpine
+    container_name: node_0
+    ports:
+      - "8222:8222"
+    command: "-c /etc/nats/nats.conf --http_port 8222 --server_name nats-0 --jetstream"
+    volumes:
+      - /home/chris/git/learn-golang/test-nats/conf/nats.conf:/etc/nats/nats.conf:ro
+    networks: ["custom_nats"]
+  nats-1:
+    image: nats:2.10.26-alpine
+    container_name: node_1
+    command: "-c /etc/nats/nats.conf --server_name nats-1 --jetstream"
+    volumes:
+      - /home/chris/git/learn-golang/test-nats/conf/nats.conf:/etc/nats/nats.conf:ro
+    networks: ["custom_nats"]
+    depends_on: ["nats-0"]
+  nats-2:
+    image: nats:2.10.26-alpine
+    container_name: node_2
+    command: "-c /etc/nats/nats.conf --server_name nats-2 --jetstream"
+    volumes:
+      - /home/chris/git/learn-golang/test-nats/conf/nats.conf:/etc/nats/nats.conf:ro
+    networks: ["custom_nats"]
+    depends_on: ["nats-0"]
+
+  haproxy:
+    image: haproxy:latest
+    container_name: loadbalancer
+    ports:
+      - "4222:4222"
+      - "8080:8080" # HAProxy 的管理介面
+    volumes:
+      - /home/chris/git/learn-golang/test-nats/conf/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks: ["custom_nats"]
+    depends_on: ["nats-0", "nats-1", "nats-2"]
+
+networks:
+  custom_nats:
+    name: custom_nats
