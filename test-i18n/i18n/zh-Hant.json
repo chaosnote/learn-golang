@@ -1,0 +1,21 @@
+[
+  {
+    "id": "hello",
+    "translation": "哈囉，{{.Name}}！"
+  },
+  {
+    "id": "welcome_message",
+    "translation": "歡迎使用我們的應用程式。"
+  },
+  {
+    "id": "item_count",
+    "translation": {
+      "one": "您有 {{.Count}} 個項目。",
+      "other": "您有 {{.Count}} 個項目。"
+    }
+  },
+  {
+    "id": "current_time",
+    "translation": "目前時間是 {{.Time}}。"
+  }
+]

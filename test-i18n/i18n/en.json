@@ -1,0 +1,19 @@
+[
+  {
+    "id": "hello",
+    "translation": "Hello, {{.Name}}!"
+  },
+  {
+    "id": "welcome_message",
+    "translation": "Welcome to our application."
+  },
+  {
+    "id": "item_count",
+    "one": "You have {{.Count}} item.",
+    "other": "You have {{.Count}} items."
+  },
+  {
+    "id": "current_time",
+    "translation": "The current time is {{.Time}}."
+  }
+]
