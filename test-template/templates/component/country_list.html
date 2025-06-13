@@ -1,0 +1,7 @@
+{{define "country_list"}}
+    <select id="country_list">
+        {{range .list}}
+        <option value="{{ .Label }}">+{{ .Code }}</option>
+        {{end}}
+    </select>
+{{end}}
