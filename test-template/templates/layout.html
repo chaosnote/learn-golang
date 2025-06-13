@@ -1,0 +1,21 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{.Title}}</title>
+</head>
+<body>
+    <header>
+        <h1>我的網站</h1>
+    </header>
+
+    <main>
+        {{template "content" .}}
+    </main>
+
+    <footer>
+        <p>&copy; 2023 我的網站</p>
+    </footer>
+</body>
+</html>
+{{end}}
