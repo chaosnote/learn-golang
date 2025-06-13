@@ -2,7 +2,5 @@
 
 {{define "content"}} {{/** 定義 layout.html 中的 content block */}}
     <h1>歡迎來到首頁！</h1>
-    <p>這是一些首頁內容。</p>
-
-    {{template "country_list" .}} {{/** 包含 country_list.html 中定義的 "country_list" 模板 */}}
+    {{template "menu_list" .}} {{/** 包含 menu_list.html 中定義的 "menu_list" 模板 */}}
 {{end}}
