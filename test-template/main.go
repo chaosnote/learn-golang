@@ -14,7 +14,7 @@ type PageData struct {
 }
 
 func LoadTemplates() (*template.Template, error) {
-	tmpl := template.New("")
+	tmpl := template.New("") // 這邊會產生 空白 名稱 - 不影響
 
 	err := filepath.WalkDir("templates", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
