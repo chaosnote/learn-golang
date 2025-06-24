@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/redis"
-	ginzap "github.com/gin-contrib/zap"
+	gin_zap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 
 	"idv/chris/utils"
@@ -39,7 +39,7 @@ func main() {
 	g.Use(sessions.Sessions("custom_session", redis_store))
 
 	g.Use(MiddlewareLogger())
-	g.Use(ginzap.RecoveryWithZap(logger.Logger(), true)) // Recovery error
+	g.Use(gin_zap.RecoveryWithZap(logger.Logger(), true)) // Recovery error
 
 	g.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Server v0.0.0")
