@@ -15,7 +15,9 @@ func NewUserService() *UserService { return &UserService{} }
 
 type UserHandler struct{ service *UserService }
 
-func NewUserHandler(service *UserService) *UserHandler { return &UserHandler{service: service} }
+func NewUserHandler(service *UserService) *UserHandler {
+	return &UserHandler{service: service}
+}
 func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Fetched: User from public API")
 }
@@ -51,8 +53,8 @@ func NewInternalRouter(deps InternalRouterDeps) *mux.Router {
 // --- 3. 啟動器 (Launcher) ---
 type ServerLauncher struct {
 	dig.In
-	PublicRouter   *mux.Router name:"public"
-	InternalRouter *mux.Router name:"internal"
+	PublicRouter   *mux.Router `name:"public"`
+	InternalRouter *mux.Router `name:"internal"`
 }
 
 func (s *ServerLauncher) Start() {
