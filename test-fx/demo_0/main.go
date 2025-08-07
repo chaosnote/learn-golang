@@ -92,6 +92,15 @@ func StartServers(p ServerParams) {
 	})
 }
 
+// fx.New 函式的運作原理
+// fx.New 函式的作用是建立一個 Fx 應用程式容器（Container）。它會接收一個或多個 fx.Option，這些選項會告訴 Fx 容器要如何組裝你的應用程式。
+//
+// 你可以把 fx.New 想像成一個總指揮部，而 fx.Option 就像是指令，告訴總指揮部：
+//
+// fx.Provide: 「請提供這些服務或物件。」
+//
+// fx.Invoke: 「當所有東西都準備好了，請調用這個函式來啟動應用程式。」
+//
 // --- 4. main 組裝與啟動 ---
 func main() {
 	// fx 內建 DIg 、主要負責整個生命週期控管
