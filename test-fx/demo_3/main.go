@@ -13,6 +13,13 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+//
+// 高內聚（High Cohesion）
+// ∟ 一個模組中的所有功能都應該緊密相關，共同為一個單一的目標服務
+// 低耦合（Low Coupling）
+// ∟ 一個模組應該盡量減少對其他模組的依賴，只通過介面（interface）或共同定義的類型來溝通
+//
+
 // --- 1. Service 和 Handler 層 ---
 type UserService struct{}
 
