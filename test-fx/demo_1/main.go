@@ -115,6 +115,8 @@ func main() {
 			NewLogger, // 註冊 Zap Logger
 			NewUserService,
 			NewUserHandler, // Fx 會自動注入 NewLogger 提供的 *zap.Logger
+
+			// 這就像是您在倉庫裡為每個包裹貼上標籤。當您需要包裹時，您不會說「給我一個包裹」，而是說「給我標籤為 'public' 的那個包裹」。
 			fx.Annotate(NewPublicRouter, fx.ResultTags(`name:"public"`)),
 			fx.Annotate(NewInternalRouter, fx.ResultTags(`name:"internal"`)),
 		),

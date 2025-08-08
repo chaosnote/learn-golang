@@ -53,6 +53,8 @@ func NewInternalRouter(deps InternalRouterDeps) *mux.Router {
 
 // 這是啟動服務的參數結構體，使用 fx.In 來注入命名依賴
 type ServerParams struct {
+	// 當你需要「一次接多個，還要有條件（name/group/optional）」的時候，就用 fx.In。
+	// 其他情況直接用函式參數就好。
 	fx.In
 	Lifecycle      fx.Lifecycle
 	PublicRouter   *mux.Router `name:"public"`
@@ -108,6 +110,21 @@ func main() {
 		fx.Provide(
 			NewUserService,
 			NewUserHandler,
+			// 在 fx 裡有兩種特殊 tag key：
+			//
+			// name:"..."
+			//
+			// 把一個值標記為具名（named value）。
+			// 容器裡同一個型別 + 不同 name 可以共存。
+			// 消費端必須精確指定 name:"..." 才能拿到。
+			//
+			// group:"..."
+			//
+			// 把多個相同型別的值歸入同一群組（value group）。
+			// 容器會把同一 group 的所有值自動收集成 slice []T。
+			// 順序無保證（unordered）。
+			// 消費端必須宣告 []T \group:"..."`` 才會收到整組。
+			//
 			fx.Annotate(NewPublicRouter, fx.ResultTags(`name:"public"`)),
 			fx.Annotate(NewInternalRouter, fx.ResultTags(`name:"internal"`)),
 		),
