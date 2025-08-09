@@ -1,0 +1,92 @@
+功能
+∟ 遊戲串接功能
+
+我方對應第三方遊戲廠商功能需求
+1、向第三方(註冊/登入)玩家身份
+∟ 是否曾經註冊、無則重新註冊
+∟ 第一階段結束後，才可登入
+2、我方點數轉出
+∟ 玩家需登入狀態
+3、第三方點數轉入
+∟ 玩家需登入狀態
+4、對方遊戲鏈結/對方大廳入口
+∟ Model 設計
+5、玩家登出第三方遊戲
+∟ 被動式觸發、因不知玩家是否仍在第三方遊戲、只能在玩家登出我方網站時處理
+
+程式語言 Golang
+預期使用功能
+∟ net/http
+∟ exec/cmd
+預期使用第三方套件
+∟ gin
+∟ uber/zap
+∟ uber/fx
+  ∟ 預期每個第三方遊戲廠商功能請求，都是一個 Module ，名稱以廠商名稱為主、同時每次外部請求，應產生新的服務來處理
+
+
+idv/chris/
+├── cmd/
+│   └── main.go
+│       - fx.New 啟動點，注入 AppConfig、ginLogger、serviceLogger、Gin Engine、廠商模組、VendorManager 等
+│
+├── configs/
+│   ├── config.yaml                 # 全域與各廠商專屬設定（BaseURL、APIKey、Secret、Timeout、Currency）
+│   └── config.dev.yaml
+│
+├── internal/
+│   ├── app/
+│   │   ├── server/
+│   │   │   ├── gin_engine.go       # Gin Engine 建立，注入 ginLogger 並設定 middleware
+│   │   │   ├── middleware/
+│   │   │   │   ├── logger.go       # Gin Middleware：HTTP Request 日誌，使用 ginLogger
+│   │   │   │   └── recovery.go     # Gin Middleware：panic recovery
+│   │   │   ├── routes.go           # Gin 路由註冊，注入 VendorManager 處理業務邏輯
+│   │   │   └── server.go           # 使用 fx.Lifecycle 管理 HTTP Server 啟動與關閉
+│   │   │
+│   │   ├── logger/
+│   │   │   ├── gin_logger.go       # Gin 專用 zap logger 初始化 (json 格式、INFO level)
+│   │   │   └── service_logger.go   # Service 專用 zap logger 初始化 (console 格式、DEBUG level)
+│   │   │
+│   │   ├── config/
+│   │   │   ├── config.go           # 載入 YAML 配置成 AppConfig
+│   │   │   └── vendor_config.go    # VendorConfig 結構定義
+│   │   │
+│   │   ├── interfaces/
+│   │   │   └── vendor_game.go      # VendorGameService 介面，方法皆返回公用 model + error
+│   │   │
+│   │   ├── models/                 # 公用資料結構 (Player、Wallet、GameEntry、Logout 等)
+│   │   │   ├── player.go
+│   │   │   ├── wallet.go
+│   │   │   ├── game_entry.go
+│   │   │   ├── logout.go
+│   │   │   └── common.go
+│   │   │
+│   │   ├── services/
+│   │   │   ├── vendor_manager.go  # 管理多個 VendorGameService 實例，根據名稱取得服務
+│   │   │   ├── player_session.go  # 核心業務邏輯，流程管理，不直接呼叫第三方API
+│   │   │   ├── wallet.go
+│   │   │   ├── game_entry.go
+│   │   │   └── logout.go
+│   │   │
+│   │   └── modules/
+│   │       ├── vendor_a/
+│   │       │   ├── module.go       # fx.Module，注入 VendorConfig 與 VendorAService
+│   │       │   ├── service.go      # 實作 VendorGameService 介面，注入 serviceLogger
+│   │       │   ├── api_client.go   # 第三方 API 呼叫封裝，使用 VendorConfig
+│   │       │   └── mapper.go       # 轉換廠商回應到公用 model
+│   │       ├── vendor_b/
+│   │       │   └── ...
+│   │       └── ...
+│   │
+│   └── infra/
+│       ├── httpclient/             # net/http 封裝，支援 Timeout、重試等
+│       ├── exec/                   # exec.Command 封裝
+│       └── db/                     # DB 連線封裝（如果需要）
+│
+├── pkg/
+│   ├── utils/                     # 共用工具
+│   └── errors/                    # 錯誤定義
+│
+├── go.mod
+└── go.sum

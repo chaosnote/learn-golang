@@ -1,0 +1,11 @@
+server:
+  port: 8080
+
+vendors:
+  vendor_a:
+    name: "VendorA"
+    base_url: "https://api.vendor-a.com"
+    api_key: "abc123"
+    secret: "shhh_secret"
+    timeout_sec: 5
+    currency: "USD"
