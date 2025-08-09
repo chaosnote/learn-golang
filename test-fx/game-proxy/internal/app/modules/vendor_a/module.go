@@ -1,6 +1,7 @@
 package vendor_a
 
 import (
+	"fmt"
 	"idv/chris/internal/app/config"
 	"idv/chris/internal/app/interfaces"
 
@@ -19,8 +20,13 @@ var Module = fx.Module(
 	name,
 	fx.Provide(
 		// 提供 vendor_a 的設定（從全域 AppConfig 取）
-		func(cfg *config.AppConfig) config.VendorConfig {
-			return cfg.Vendors[name]
+		func(cfg *config.AppConfig) (config config.VendorConfig, e error) {
+			var ok bool
+			config, ok = cfg.Vendors[name]
+			if !ok {
+				return config, fmt.Errorf("Configuration %s not found.", name)
+			}
+			return
 		},
 		// 提供一個實作 interfaces.VendorGameService 並把它加入 group:"vendors"
 		fx.Annotate(
