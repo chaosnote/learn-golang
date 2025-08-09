@@ -23,7 +23,7 @@ func ProvideVendorManager(params struct {
 		vendors: make(map[string]interfaces.VendorGameService),
 	}
 	for _, v := range params.Vendors {
-		vm.vendors[getVendorName(v)] = v
+		vm.vendors[v.GetName()] = v
 	}
 	return vm
 }
@@ -37,10 +37,4 @@ func (vm *VendorManager) GetVendorService(name string) (interfaces.VendorGameSer
 		return svc, nil
 	}
 	return nil, errors.New("vendor service not found")
-}
-
-// getVendorName 回傳廠商名稱 (實務可改成 interface method)
-func getVendorName(_ interfaces.VendorGameService) string {
-	// 這裡硬寫對應 vendor_a
-	return "vendor_a"
 }

@@ -23,6 +23,10 @@ func NewVendorAService(cfg config.VendorConfig, client *APIClient, logger *zap.L
 	}
 }
 
+func (s *VendorAService) GetName() string {
+	return "vendor_a"
+}
+
 // RegisterOrLogin 範例實作（可改為真實呼叫第三方 API）
 func (s *VendorAService) RegisterOrLogin(ctx context.Context, playerID string) (*models.Player, error) {
 	s.serviceLogger.Info("VendorA RegisterOrLogin called", zap.String("playerID", playerID))
