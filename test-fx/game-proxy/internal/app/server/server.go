@@ -5,19 +5,21 @@ import (
 	"fmt"
 	"net/http"
 
+	"idv/chris/internal/app/config"
 	"idv/chris/internal/app/services"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 )
 
-// RegisterServer 使用 fx.Lifecycle 啟動與關閉 HTTP Server
-func RegisterServer(lc fx.Lifecycle, engine *gin.Engine, vm *services.VendorManager) {
-	// 註冊路由（可視需求拆分或擴充）
+// RegisterServer 使用 fx.Lifecycle 啟動/關閉 HTTP Server
+func RegisterServer(lc fx.Lifecycle, engine *gin.Engine, cfg *config.AppConfig, vm *services.VendorManager) {
+	// 在啟動前註冊路由（確保 VendorManager 已提供）
 	RegisterRoutes(engine, vm)
 
+	addr := fmt.Sprintf(":%d", cfg.Server.Port)
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", 8080),
+		Addr:    addr,
 		Handler: engine,
 	}
 

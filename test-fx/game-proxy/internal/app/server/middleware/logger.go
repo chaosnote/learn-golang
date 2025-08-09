@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// NewLoggerMiddleware 產生一個 Gin middleware 用於記錄 HTTP 存取日誌
+// NewLoggerMiddleware 為 Gin 設計的 access logger middleware
 func NewLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -18,7 +18,7 @@ func NewLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 		latency := time.Since(start)
 		status := c.Writer.Status()
 
-		logger.Info("HTTP request",
+		logger.Info("http_request",
 			zap.Int("status", status),
 			zap.String("method", c.Request.Method),
 			zap.String("path", path),

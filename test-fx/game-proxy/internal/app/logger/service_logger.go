@@ -6,19 +6,17 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// ProvideServiceLogger 建立適合 Service 層業務使用的 zap.Logger，命名為 "service_logger"
-func ProvideServiceLogger() (logger *zap.Logger, _ error) {
+// ProvideServiceLogger 建立給 Service 層用的 logger，會被命名為 "service_logger"
+func ProvideServiceLogger() (*zap.Logger, error) {
 	cfg := zap.NewProductionConfig()
 	cfg.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
 	cfg.Encoding = "console"
 	cfg.EncoderConfig.TimeKey = "T"
 	cfg.EncoderConfig.LevelKey = "L"
-	cfg.EncoderConfig.NameKey = "N"
 	cfg.EncoderConfig.MessageKey = "M"
 	cfg.EncoderConfig.CallerKey = "C"
 	cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-
 	return cfg.Build()
 }
 

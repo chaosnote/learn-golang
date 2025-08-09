@@ -7,12 +7,12 @@ import (
 	"go.uber.org/zap"
 )
 
-// NewRecoveryMiddleware Gin middleware，攔截 panic 並記錄錯誤，回傳 500
+// NewRecoveryMiddleware 攔截 panic 並且記錄，回 500
 func NewRecoveryMiddleware(logger *zap.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
-			if err := recover(); err != nil {
-				logger.Error("panic recovered", zap.Any("error", err))
+			if r := recover(); r != nil {
+				logger.Error("panic recovered", zap.Any("error", r))
 				c.AbortWithStatus(http.StatusInternalServerError)
 			}
 		}()
