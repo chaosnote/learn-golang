@@ -16,11 +16,11 @@ type vendorADeps struct {
 
 // Module 以 fx.Module 包裝 VendorA 的 providers
 var Module = fx.Module(
-	"vendor_a",
+	name,
 	fx.Provide(
 		// 提供 vendor_a 的設定（從全域 AppConfig 取）
 		func(cfg *config.AppConfig) config.VendorConfig {
-			return cfg.Vendors["vendor_a"]
+			return cfg.Vendors[name]
 		},
 		// 提供一個實作 interfaces.VendorGameService 並把它加入 group:"vendors"
 		fx.Annotate(

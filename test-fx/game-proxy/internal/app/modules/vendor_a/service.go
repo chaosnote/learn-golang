@@ -26,7 +26,7 @@ func NewVendorAService(cfg config.VendorConfig, client *APIClient, logger *zap.L
 
 // GetName 回傳供 VendorManager 索引的名稱（須與 config 裡的 key 一致）
 func (s *VendorAService) GetName() string {
-	return s.cfg.Name
+	return name
 }
 
 func (s *VendorAService) RegisterOrLogin(ctx context.Context, playerID string) (*models.Player, error) {

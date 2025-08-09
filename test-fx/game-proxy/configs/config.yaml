@@ -3,7 +3,6 @@ server:
 
 vendors:
   vendor_a:
-    name: "vendor_a"
     base_url: "https://api.vendor-a.com"
     api_key: "abc123"
     secret: "shhh_secret"

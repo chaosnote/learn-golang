@@ -1,6 +1,7 @@
 package vendor_a
 
 import (
+	"fmt"
 	"net/http"
 
 	"idv/chris/internal/app/services"
@@ -10,12 +11,12 @@ import (
 
 // RegisterRoutes 由 vendor_a 模組負責註冊自己路由
 func RegisterRoutes(r *gin.Engine, vm *services.VendorManager) {
-	group := r.Group("/vendor/vendor_a")
+	group := r.Group(fmt.Sprintf("/vendor/%s", name))
 
 	group.POST("/player/login", func(c *gin.Context) {
 		playerID := c.PostForm("player_id")
 
-		svc, err := vm.GetVendorService("vendor_a")
+		svc, err := vm.GetVendorService(name)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return

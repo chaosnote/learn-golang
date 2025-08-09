@@ -19,7 +19,6 @@ type ServerConfig struct {
 
 // 之後可調整為 json 對應 map[string]interface{}
 type VendorConfig struct {
-	Name       string `yaml:"name"`
 	BaseURL    string `yaml:"base_url"`
 	APIKey     string `yaml:"api_key"`
 	Secret     string `yaml:"secret"`
