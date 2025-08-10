@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"idv/chris/internal/app/modules/vendor_a" // 模組化路由：你可新增 vendor_b 並在此掛載
+	// 模組化路由：你可新增 vendor_b 並在此掛載
 	"idv/chris/internal/app/services"
 
 	"github.com/gin-gonic/gin"
@@ -20,6 +20,23 @@ func RegisterRoutes(r *gin.Engine, vm *services.VendorManager) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "vendor": names})
 	})
 
-	// 各模組自行管理自己的路由，這裡只負責呼叫它們
-	vendor_a.RegisterRoutes(r, vm)
+	// 玩家登入或註冊路由範例
+	r.POST("/vendor/:name/player/login", func(c *gin.Context) {
+		vendorName := c.Param("name")
+		playerID := c.PostForm("player_id")
+
+		svc, err := vm.GetVendorService(vendorName)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		player, err := svc.RegisterOrLogin(c.Request.Context(), playerID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, player)
+	})
 }
