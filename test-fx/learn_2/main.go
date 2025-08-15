@@ -133,6 +133,10 @@ func StartServers(p ServerParams) {
 	})
 }
 
+// fx.Decorate	    裝飾或修改已註冊的依賴項，不改變其原始建構函數。	       為服務增加日誌、度量或錯誤處理功能。
+// fx.ResultTags	標記建構函數的返回結果，用於區分相同型別的多個依賴項。	    標記不同型別的日誌記錄器或不同設定的資料庫連線。
+// fx.ParamTags	    標記建構函數的輸入參數，指定需要哪個帶有特定標籤的依賴項。	在調用函數時，明確指定需要哪個帶有標籤的依賴項。
+
 // --- 5. main 組裝與啟動 ---
 func main() {
 	env := os.Getenv("ENV")
@@ -142,12 +146,12 @@ func main() {
 
 	app := fx.New(
 		fx.Provide(
-			fx.Annotate(NewDevLogger, fx.ResultTags(`name:"dev"`)),
-			fx.Annotate(NewProdLogger, fx.ResultTags(`name:"prod"`)),
+			fx.Annotate(NewDevLogger, fx.ResultTags(`name:"dev"`)),   // 輸出指定
+			fx.Annotate(NewProdLogger, fx.ResultTags(`name:"prod"`)), // 輸出指定
 
 			fx.Annotate(
 				func(logger *zap.Logger) *zap.Logger { return logger },
-				fx.ParamTags(fmt.Sprintf(`name:"%s"`, env)),
+				fx.ParamTags(fmt.Sprintf(`name:"%s"`, env)), // 注入指定
 			),
 
 			NewUserService,
