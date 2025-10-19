@@ -11,6 +11,14 @@ const (
 	file_path = "./dist/output.txt"
 )
 
+var (
+	allow = map[string]bool{
+		".go":   true,
+		".json": true,
+		".html": true,
+	}
+)
+
 func write_file(content []byte) {
 	// 1. 使用 os.OpenFile 開啟檔案，設定 O_APPEND, O_CREATE, O_WRONLY
 	// O_APPEND: 追加模式
@@ -23,7 +31,7 @@ func write_file(content []byte) {
 	defer file.Close() // 確保在函式結束時關閉檔案
 
 	// 2. 寫入數據
-	_, err = file.Write(content)
+	_, err = file.Write([]byte(string(content) + "\n"))
 	if err != nil {
 		panic(fmt.Sprintf("寫入檔案失敗: %v", err))
 	}
@@ -42,7 +50,7 @@ func PrintTree(path string, prefix string) {
 			connector = "└── "
 		}
 
-		output_path := prefix + connector + entry.Name() + "\n"
+		output_path := prefix + connector + entry.Name()
 		write_file([]byte(output_path))
 
 		if entry.IsDir() {
@@ -53,7 +61,7 @@ func PrintTree(path string, prefix string) {
 				subPrefix += "│   "
 			}
 			PrintTree(filepath.Join(path, entry.Name()), subPrefix)
-		} else if filepath.Ext(entry.Name()) == ".go" {
+		} else if allow[filepath.Ext(entry.Name())] {
 			content, err := os.ReadFile(filepath.Join(path, entry.Name()))
 			if err != nil {
 				panic(fmt.Sprintf("寫入檔案失敗: %v", err))
