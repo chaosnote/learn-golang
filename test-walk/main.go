@@ -12,11 +12,13 @@ const (
 )
 
 var (
-	allow = map[string]bool{
+	allow_map = map[string]bool{
 		".go":   true,
 		".json": true,
 		".html": true,
 	}
+
+	pass = flag.Bool("pass", false, "所以檔案全寫入檔案")
 )
 
 func write_file(content []byte) {
@@ -61,7 +63,7 @@ func PrintTree(path string, prefix string) {
 				subPrefix += "│   "
 			}
 			PrintTree(filepath.Join(path, entry.Name()), subPrefix)
-		} else if allow[filepath.Ext(entry.Name())] {
+		} else if allow_map[filepath.Ext(entry.Name())] || *pass {
 			content, err := os.ReadFile(filepath.Join(path, entry.Name()))
 			if err != nil {
 				panic(fmt.Sprintf("寫入檔案失敗: %v", err))
